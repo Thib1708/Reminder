@@ -13,9 +13,12 @@ struct PersistenceController {
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
-            let newItem = Reminder(context: viewContext)
-            newItem.title = "Test"
-            newItem.notes = "test"
+        let newItem = Reminder(context: viewContext)
+        newItem.title = "Test"
+        newItem.notes = "test"
+        newItem.isDate = false
+        newItem.isHour = false
+            
         do {
             try viewContext.save()
         } catch {

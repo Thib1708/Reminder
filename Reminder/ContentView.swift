@@ -18,16 +18,35 @@ struct ContentView: View {
     @State private var showingAddItem = false
     private var nb_done = 0
 
+    let dayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        return formatter
+    }()
+    let timeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter
+    }()
+
     var body: some View {
+        
         NavigationView {
-            if(reminders.isEmpty)
+            if(reminders.count == 0)
             {
                 Text("Aucun rappel")
                     .navigationBarTitle("Rappel")
-                    .navigationBarItems(leading: EditButton(),
-                                        trailing: Button("Add") {
-                        self.showingAddItem.toggle()
-                    })
+                    .toolbar {
+                        ToolbarItemGroup(placement: .bottomBar) {
+                            Button {
+                                self.showingAddItem.toggle()
+                            } label : {
+                                Image(systemName: "plus.circle.fill")
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                            }
+                        }
+                    }
                     .sheet(isPresented: $showingAddItem) {
                         AddView().environment(\.managedObjectContext, self.viewContext)
                     }
@@ -42,22 +61,40 @@ struct ContentView: View {
                                 Image(systemName: reminder.isDone ? "largecircle.fill.circle" : "circle")
                                     .foregroundColor(reminder.isDone ? .blue : .gray)
                             }
-                            VStack {
+                            VStack(alignment: .leading) {
                                 Text("\(reminder.title)")
-                                Text("\(reminder.notes)")
-                                    .font(.footnote)
-                                    .foregroundColor(Color.gray)
-//                                    .multilineTextAlignment(.leading)
+                                if (!reminder.notes.isEmpty) {
+                                    Text("\(reminder.notes)")
+                                        .font(.footnote)
+                                        .foregroundColor(Color.gray)
+                                }
+                                if (reminder.isDate) {
+                                    Text("\(reminder.date, formatter: dayFormatter)")
+                                        .font(.footnote)
+                                        .foregroundColor(Color.gray)
+                                }
+                                if (reminder.isHour) {
+                                    Text("\(reminder.hour, formatter: timeFormatter)")
+                                        .font(.footnote)
+                                        .foregroundColor(Color.gray)
+                                }
                             }
                         }
                     }
                     .onDelete(perform: deleteItem(at:))
                 }
                 .navigationBarTitle("Rappel")
-                .navigationBarItems(leading: EditButton(),
-                                    trailing: Button("Add") {
-                    self.showingAddItem.toggle()
-                })
+                .toolbar {
+                    ToolbarItemGroup(placement: .bottomBar) {
+                        Button {
+                            self.showingAddItem.toggle()
+                        } label : {
+                            Image(systemName: "plus.circle.fill")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                        }
+                    }
+                }
                 .sheet(isPresented: $showingAddItem) {
                     AddView().environment(\.managedObjectContext, self.viewContext)
                 }

@@ -13,14 +13,44 @@ struct AddView: View {
     
     @State private var title = ""
     @State private var notes = ""
+    @State private var date = Date.now
+    @State private var hour = Date.now
     @State private var isDone = false
+    @State private var isDate = false
+    @State private var isHour = false
     @State private var isAlert = false
+    @State private var showDatePicker = false
+    @State private var showHourPicker = false
     var body: some View {
         NavigationView {
             Form {
                 Section {
                     TextField("Titre", text: $title)
                     TextField("Notes", text: $notes)
+                }
+                Section {
+                    HStack {
+                        Image(systemName: "calendar")
+                            .foregroundColor(.red)
+                        Toggle("Date", isOn: $showDatePicker)
+                    }
+                    if (showDatePicker)
+                    {
+                        DatePicker("", selection: $date, in: Date()..., displayedComponents: .date)
+                            .datePickerStyle(GraphicalDatePickerStyle())
+                            .frame(maxHeight: 400)
+                    }
+                    HStack {
+                        Image(systemName: "clock")
+                            .foregroundColor(.blue)
+                        Toggle("Heure", isOn: $showHourPicker)
+                    }
+                    if (showHourPicker)
+                    {
+                        DatePicker("", selection: $hour, displayedComponents: .hourAndMinute)
+                            .datePickerStyle(WheelDatePickerStyle())
+                            .frame(maxHeight: 400)
+                    }
                 }
             }
             .navigationBarItems(
@@ -50,6 +80,18 @@ struct AddView: View {
         newReminder.title = title
         newReminder.notes = notes
         newReminder.isDone = isDone
+        newReminder.isDate = isDate
+        newReminder.isHour = isHour
+        if (showDatePicker)
+        {
+            newReminder.date = date
+            newReminder.isDate = true
+        }
+        if (showHourPicker)
+        {
+            newReminder.hour = hour
+            newReminder.isHour = true
+        }
         do {
             try self.viewContext.save()
         } catch {

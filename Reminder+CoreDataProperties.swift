@@ -17,8 +17,12 @@ extension Reminder {
     }
 
     @NSManaged public var isDone: Bool
+    @NSManaged public var isDate: Bool
+    @NSManaged public var isHour: Bool
     @NSManaged public var notes: String
     @NSManaged public var title: String
+    @NSManaged public var date: Date
+    @NSManaged public var hour: Date
 
 }
 
